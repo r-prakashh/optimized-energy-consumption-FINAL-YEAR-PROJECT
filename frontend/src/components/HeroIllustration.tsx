@@ -1,123 +1,108 @@
 /**
  * Custom illustrated hero scene (no external image assets — self-contained
- * inline SVG, zero licensing/hosting concerns): a glowing smart-energy-meter
- * centerpiece with appliance chips feeding into it over a night skyline,
- * echoing the "bold text over a moody hero photo" composition style without
- * needing a licensed stock photo. Composition is deliberately weighted to
- * the right two-thirds with a strong opaque fade on the left so hero copy
- * overlaid there stays legible.
+ * inline SVG, zero licensing/hosting concerns): a glowing central budget
+ * meter with appliance chips orbiting it over a night skyline, rendered
+ * full-bleed and symmetric so it reads clearly behind centered hero copy.
  */
 export function HeroIllustration() {
   return (
-    <svg viewBox="0 0 900 720" className="hero-illustration" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 1400 800" className="hero-illustration" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <radialGradient id="glow" cx="63%" cy="42%" r="42%">
-          <stop offset="0%" stopColor="#e50914" stopOpacity="0.35" />
-          <stop offset="60%" stopColor="#e50914" stopOpacity="0.08" />
+        <radialGradient id="glow" cx="50%" cy="46%" r="50%">
+          <stop offset="0%" stopColor="#ff2a35" stopOpacity="0.55" />
+          <stop offset="45%" stopColor="#e50914" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#e50914" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#0a0a0c" stopOpacity="1" />
-          <stop offset="45%" stopColor="#0a0a0c" stopOpacity="0.85" />
-          <stop offset="65%" stopColor="#0a0a0c" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#0a0a0c" stopOpacity="0" />
-        </linearGradient>
+        <radialGradient id="glow2" cx="50%" cy="46%" r="30%">
+          <stop offset="0%" stopColor="#ff8a3d" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#ff8a3d" stopOpacity="0" />
+        </radialGradient>
         <linearGradient id="dialGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2a2b31" />
+          <stop offset="0%" stopColor="#33343b" />
           <stop offset="100%" stopColor="#141417" />
         </linearGradient>
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M40 0H0V40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+          <path d="M44 0H0V44" fill="none" stroke="rgba(255,255,255,0.055)" strokeWidth="1" />
         </pattern>
       </defs>
 
-      <rect width="900" height="720" fill="#0a0a0c" />
-      <rect width="900" height="720" fill="url(#grid)" />
-      <circle cx="565" cy="300" r="280" fill="url(#glow)" />
+      <rect width="1400" height="800" fill="#0a0a0c" />
+      <rect width="1400" height="800" fill="url(#grid)" />
+      <circle cx="700" cy="360" r="480" fill="url(#glow)" />
+      <circle cx="700" cy="360" r="220" fill="url(#glow2)" />
 
-      {/* night skyline, right two-thirds only */}
-      <g opacity="0.55">
-        <rect x="360" y="520" width="70" height="160" fill="#141417" />
-        <rect x="440" y="470" width="55" height="210" fill="#17181c" />
-        <rect x="505" y="550" width="60" height="130" fill="#141417" />
-        <rect x="690" y="500" width="65" height="180" fill="#17181c" />
-        <rect x="765" y="540" width="55" height="140" fill="#141417" />
-        <rect x="825" y="480" width="50" height="200" fill="#17181c" />
+      {/* night skyline across full width */}
+      <g opacity="0.5">
         {[
-          [375, 540], [375, 570], [400, 540], [400, 600],
-          [455, 495], [455, 530], [480, 560], [480, 600],
-          [705, 525], [705, 560], [730, 590],
-          [780, 565], [780, 600], [840, 505], [840, 545], [840, 590],
-        ].map(([x, y], i) => (
-          <rect key={i} x={x} y={y} width="8" height="10" fill="#f5c542" opacity="0.5" />
+          [30, 560, 80, 200], [130, 610, 60, 150], [210, 520, 90, 240],
+          [1060, 540, 85, 220], [1170, 600, 60, 160], [1260, 500, 100, 260],
+          [340, 640, 55, 120], [960, 630, 55, 130],
+        ].map(([x, y, w, h], i) => (
+          <rect key={i} x={x} y={y} width={w} height={h} fill={i % 2 ? "#17181c" : "#141417"} />
         ))}
+        {Array.from({ length: 40 }).map((_, i) => {
+          const x = 40 + ((i * 37) % 1320);
+          const y = 540 + ((i * 53) % 220);
+          return <rect key={i} x={x} y={y} width="7" height="9" fill="#f5c542" opacity={0.25 + (i % 4) * 0.12} />;
+        })}
       </g>
 
-      {/* ground glow line */}
-      <line x1="340" y1="680" x2="900" y2="680" stroke="rgba(229,9,20,0.4)" strokeWidth="1.5" />
+      <line x1="0" y1="720" x2="1400" y2="720" stroke="rgba(229,9,20,0.45)" strokeWidth="1.5" />
+
+      {/* orbit ring */}
+      <circle cx="700" cy="360" r="230" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="2 6" />
 
       {/* energy flow lines from appliance chips to central meter */}
-      <g fill="none" stroke="#e50914" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.55">
-        <path d="M410 200 C 470 230, 505 260, 540 300" />
-        <path d="M760 180 C 690 220, 640 260, 595 300" />
-        <path d="M420 420 C 480 380, 515 350, 550 320" />
-        <path d="M740 440 C 680 400, 640 360, 600 325" />
+      <g fill="none" stroke="#e50914" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.5">
+        <path d="M520 180 C 580 230, 630 280, 660 320" />
+        <path d="M880 180 C 820 230, 770 280, 740 320" />
+        <path d="M480 560 C 550 500, 610 440, 655 390" />
+        <path d="M920 560 C 850 500, 790 440, 745 390" />
+        <path d="M340 360 C 450 360, 540 360, 610 360" />
+        <path d="M1060 360 C 950 360, 860 360, 790 360" />
       </g>
 
-      {/* appliance chips */}
+      {/* appliance chips arranged in an orbit around the meter */}
       {[
-        { x: 360, y: 165, bg: "#1c3a5e" },
-        { x: 730, y: 145, bg: "#2a2a1c" },
-        { x: 370, y: 455, bg: "#3a2e10" },
-        { x: 710, y: 475, bg: "#12305a" },
+        { x: 484, y: 144, bg: "#1c3a5e" },
+        { x: 844, y: 144, bg: "#2a2a1c" },
+        { x: 304, y: 324, bg: "#12305a" },
+        { x: 1024, y: 324, bg: "#3a1c1c" },
+        { x: 444, y: 524, bg: "#3a2e10" },
+        { x: 884, y: 524, bg: "#123a2e" },
       ].map((c, i) => (
         <g key={i} transform={`translate(${c.x},${c.y})`}>
-          <rect width="72" height="72" rx="18" fill={c.bg} />
+          <rect width="72" height="72" rx="18" fill={c.bg} opacity="0.9" />
           <circle cx="36" cy="36" r="26" fill="rgba(255,255,255,0.08)" />
           <circle cx="36" cy="36" r="6" fill="#fff" opacity="0.9" />
         </g>
       ))}
 
       {/* central smart meter dial */}
-      <g transform="translate(580,320)">
-        <circle r="105" fill="url(#dialGrad)" stroke="#2a2b31" strokeWidth="2" />
-        <circle r="105" fill="none" stroke="#e50914" strokeWidth="2" strokeDasharray="6 8" opacity="0.6">
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0 0 0"
-            to="360 0 0"
-            dur="40s"
-            repeatCount="indefinite"
-          />
+      <g transform="translate(700,360)">
+        <circle r="130" fill="url(#dialGrad)" stroke="#3a3b42" strokeWidth="2" />
+        <circle r="130" fill="none" stroke="#e50914" strokeWidth="2.5" strokeDasharray="7 9" opacity="0.7">
+          <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="36s" repeatCount="indefinite" />
         </circle>
-        <circle r="78" fill="#0f0f12" />
-        {Array.from({ length: 24 }).map((_, i) => {
-          const angle = (i / 24) * Math.PI * 2;
-          const r1 = 66, r2 = 74;
+        <circle r="98" fill="#0f0f12" />
+        {Array.from({ length: 30 }).map((_, i) => {
+          const angle = (i / 30) * Math.PI * 2;
+          const r1 = 82, r2 = 92;
           return (
             <line
               key={i}
-              x1={Math.cos(angle) * r1}
-              y1={Math.sin(angle) * r1}
-              x2={Math.cos(angle) * r2}
-              y2={Math.sin(angle) * r2}
-              stroke="#e50914"
-              strokeWidth="2"
-              opacity={i % 3 === 0 ? 0.9 : 0.35}
+              x1={Math.cos(angle) * r1} y1={Math.sin(angle) * r1}
+              x2={Math.cos(angle) * r2} y2={Math.sin(angle) * r2}
+              stroke="#ff3b44" strokeWidth="2.5"
+              opacity={i % 3 === 0 ? 1 : 0.35}
             />
           );
         })}
-        <text x="0" y="-6" textAnchor="middle" fontSize="30" fontWeight="800" fill="#f5f5f7" fontFamily="Inter, sans-serif">
-          ₹
-        </text>
-        <text x="0" y="26" textAnchor="middle" fontSize="13" fontWeight="700" fill="#9a9ba3" fontFamily="Inter, sans-serif" letterSpacing="1.5">
+        <text x="0" y="-8" textAnchor="middle" fontSize="38" fontWeight="800" fill="#ffffff" fontFamily="Inter, sans-serif">₹</text>
+        <text x="0" y="30" textAnchor="middle" fontSize="15" fontWeight="700" fill="#c7c8cf" fontFamily="Inter, sans-serif" letterSpacing="2">
           BUDGET
         </text>
       </g>
-
-      {/* left fade so hero text stays legible when overlaid */}
-      <rect width="900" height="720" fill="url(#fadeLeft)" />
     </svg>
   );
 }
