@@ -116,14 +116,42 @@ def _process_house(house_id: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     return household_daily, appliance_daily
 
 
-def build_household_daily(house_ids: list[int]) -> pd.DataFrame:
+def build_household_daily(house_ids: list[int], with_weather: bool = True) -> pd.DataFrame:
     parts = [_process_house(h)[0] for h in house_ids]
     out = pd.concat(parts, ignore_index=True)
     out["date"] = pd.to_datetime(out["date"])
     out = out.sort_values(["house_id", "date"]).reset_index(drop=True)
     out = _add_time_features(out)
     out = _add_lag_features(out, target_col="total_kwh", group_col="house_id")
+
+    if with_weather:
+        out = _add_weather_features(out)
+
     return out.dropna().reset_index(drop=True)
+
+
+def _add_weather_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Joins Loughborough (REFIT's actual location) historical daily mean
+    temperature onto the household daily table, plus a heating-degree-day
+    feature (max(18 - temp, 0)) capturing that UK homes' consumption rises
+    non-linearly as it gets colder below a ~18C comfort baseline.
+    """
+    from app.ml.weather import fetch_uk_training_weather
+
+    start = df["date"].min().strftime("%Y-%m-%d")
+    end = df["date"].max().strftime("%Y-%m-%d")
+    try:
+        weather = fetch_uk_training_weather(start, end)
+    except Exception as e:
+        print(f"WARNING: weather fetch failed ({e}); training without weather features.")
+        df["temp_mean_c"] = np.nan
+        df["heating_degree_days"] = np.nan
+        return df
+
+    df = df.merge(weather, on="date", how="left")
+    df["heating_degree_days"] = (18 - df["temp_mean_c"]).clip(lower=0)
+    return df
 
 
 def build_appliance_daily(house_ids: list[int]) -> pd.DataFrame:

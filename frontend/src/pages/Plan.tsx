@@ -4,15 +4,31 @@ import {
   fetchApplianceCatalog,
   whatIf,
   type ApplianceCatalogEntry,
+  type ApplianceSpecs,
   type PlanResponse,
 } from "../api/client";
-import { ApplianceSelector } from "../components/ApplianceSelector";
+import { ActionPlan } from "../components/ActionPlan";
+import { ApplianceCompareBars } from "../components/ApplianceCompareBars";
+import { ApplianceSelector, type SelectedAppliance } from "../components/ApplianceSelector";
+import { ApplianceShareChart } from "../components/ApplianceShareChart";
+import { BudgetGauge } from "../components/BudgetGauge";
 import { ForecastChart } from "../components/ForecastChart";
-import { PlanResults } from "../components/PlanResults";
+import { TodShiftCard } from "../components/TodShiftCard";
+
+const STEPS = ["Budget", "Appliances", "Your plan"];
+
+function defaultSpecs(appliance: ApplianceCatalogEntry): ApplianceSpecs {
+  const specs: ApplianceSpecs = {};
+  for (const field of appliance.specs) {
+    specs[field.key] = field.default;
+  }
+  return specs;
+}
 
 export function Plan() {
+  const [step, setStep] = useState(0);
   const [catalog, setCatalog] = useState<ApplianceCatalogEntry[]>([]);
-  const [selected, setSelected] = useState<Record<string, number>>({});
+  const [selected, setSelected] = useState<Record<string, SelectedAppliance>>({});
   const [budget, setBudget] = useState(3000);
   const [durationDays, setDurationDays] = useState(30);
   const [plan, setPlan] = useState<PlanResponse | null>(null);
@@ -25,10 +41,10 @@ export function Plan() {
       .then((data) => {
         setCatalog(data);
         const defaults = ["air_conditioner", "fan", "television", "lighting"];
-        const initial: Record<string, number> = {};
+        const initial: Record<string, SelectedAppliance> = {};
         data.forEach((a) => {
           if (defaults.includes(a.category)) {
-            initial[a.category] = Math.min(4, a.max_hours);
+            initial[a.category] = { hours: Math.min(4, a.max_hours), specs: defaultSpecs(a) };
           }
         });
         setSelected(initial);
@@ -40,16 +56,29 @@ export function Plan() {
       );
   }, []);
 
-  function handleApplianceChange(category: string, hours: number | null) {
+  function handleToggle(category: string, checked: boolean) {
     setSelected((prev) => {
       const next = { ...prev };
-      if (hours === null) {
+      if (!checked) {
         delete next[category];
-      } else {
-        next[category] = hours;
+        return next;
       }
+      const appliance = catalog.find((a) => a.category === category);
+      if (!appliance) return prev;
+      next[category] = { hours: Math.min(4, appliance.max_hours), specs: defaultSpecs(appliance) };
       return next;
     });
+  }
+
+  function handleHoursChange(category: string, hours: number) {
+    setSelected((prev) => ({ ...prev, [category]: { ...prev[category], hours } }));
+  }
+
+  function handleSpecChange(category: string, key: string, value: string | number | boolean) {
+    setSelected((prev) => ({
+      ...prev,
+      [category]: { ...prev[category], specs: { ...prev[category].specs, [key]: value } },
+    }));
   }
 
   async function runPlan(useWhatIf: boolean) {
@@ -63,13 +92,15 @@ export function Plan() {
       const payload = {
         budget,
         duration_days: durationDays,
-        appliances: Object.entries(selected).map(([category, hours_per_day]) => ({
+        appliances: Object.entries(selected).map(([category, { hours, specs }]) => ({
           category,
-          hours_per_day,
+          hours_per_day: hours,
+          specs,
         })),
       };
       const result = useWhatIf ? await whatIf(payload) : await createPlan(payload);
       setPlan(result);
+      setStep(2);
     } catch {
       setError("Something went wrong generating the plan. Check the backend logs.");
     } finally {
@@ -90,9 +121,23 @@ export function Plan() {
 
       {catalogError && <div className="banner error">{catalogError}</div>}
 
-      <main className="app-grid">
-        <section className="panel">
-          <h2>1. Your budget &amp; duration</h2>
+      <div className="stepper">
+        {STEPS.map((label, i) => (
+          <button
+            key={label}
+            className={`step-pill ${i === step ? "active" : ""} ${i < step ? "done" : ""}`}
+            onClick={() => (i <= step || plan) && i !== 2 && setStep(i)}
+            disabled={i === 2 && !plan}
+          >
+            <span className="step-pill-n">{i + 1}</span>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {step === 0 && (
+        <section className="panel wizard-panel">
+          <h2>Your budget &amp; duration</h2>
           <div className="field-row">
             <label>
               Budget (₹)
@@ -114,52 +159,114 @@ export function Plan() {
               />
             </label>
           </div>
+          <div className="actions">
+            <button className="primary" onClick={() => setStep(1)}>
+              Next: Select appliances
+            </button>
+          </div>
+        </section>
+      )}
 
-          <h2>2. Select appliances</h2>
+      {step === 1 && (
+        <section className="panel wizard-panel wizard-panel-wide">
+          <h2>Select your appliances</h2>
+          <p className="hint">
+            Add the appliance model details you know (tonnage, star rating,
+            capacity) for a more accurate estimate — or skip them and we'll
+            use typical values.
+          </p>
           <ApplianceSelector
             catalog={catalog}
             selected={selected}
-            onChange={handleApplianceChange}
+            onToggle={handleToggle}
+            onHoursChange={handleHoursChange}
+            onSpecChange={handleSpecChange}
           />
-
           {error && <div className="banner error">{error}</div>}
-
           <div className="actions">
-            <button
-              className="primary"
-              disabled={loading}
-              onClick={() => runPlan(false)}
-            >
+            <button className="secondary" onClick={() => setStep(0)}>
+              Back
+            </button>
+            <button className="primary" disabled={loading} onClick={() => runPlan(false)}>
               {loading ? "Calculating..." : "Generate Plan"}
             </button>
-            {plan && (
-              <button
-                className="secondary"
-                disabled={loading}
-                onClick={() => runPlan(true)}
-              >
-                Re-run What-If
-              </button>
-            )}
           </div>
         </section>
+      )}
 
-        <section className="panel">
-          <h2>3. Forecast &amp; recommendations</h2>
-          {!plan && (
-            <p className="empty-state">
-              Fill in your budget and appliances, then generate a plan to see
-              your forecast and cost-optimized appliance schedule here.
+      {step === 2 && plan && (
+        <section className="results-grid">
+          <div className="panel">
+            <h2>Budget outcome</h2>
+            <BudgetGauge
+              projectedCost={plan.projected_cost}
+              budget={plan.budget}
+              originalCost={plan.original_cost}
+            />
+            <div className="stat-row" style={{ marginTop: 20 }}>
+              <div className="stat-card">
+                <span className="stat-label">Total energy</span>
+                <span className="stat-value">{plan.projected_total_kwh.toFixed(1)} kWh</span>
+                <span className="stat-sub">over {plan.duration_days} days</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-label">Original estimate</span>
+                <span className="stat-value">₹{plan.original_cost.toFixed(2)}</span>
+                {plan.original_cost > plan.projected_cost && (
+                  <span className="stat-sub savings">
+                    Saved ₹{(plan.original_cost - plan.projected_cost).toFixed(2)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <h2 style={{ marginTop: 28 }}>Forecast (next {plan.duration_days} days)</h2>
+            <ForecastChart forecastDailyKwh={plan.forecast_daily_kwh} />
+          </div>
+
+          <div className="panel">
+            <h2>Energy share by appliance</h2>
+            <ApplianceShareChart appliances={plan.appliances} />
+          </div>
+
+          <div className="panel span-2">
+            <h2>Your action plan</h2>
+            <ActionPlan lines={plan.action_plan} />
+          </div>
+
+          <div className="panel span-2">
+            <h2>Recommended hours — before &amp; after</h2>
+            <ApplianceCompareBars appliances={plan.appliances} />
+          </div>
+
+          {plan.tod_shift_opportunities.length > 0 && (
+            <div className="panel span-2">
+              <TodShiftCard
+                opportunities={plan.tod_shift_opportunities}
+                totalSaving={plan.tod_total_saving_for_period}
+                durationDays={plan.duration_days}
+              />
+            </div>
+          )}
+
+          {!plan.budget_met && (
+            <p className="banner warn span-2">
+              Even at minimum hours for essential appliances, the projected
+              cost exceeds your budget. Consider increasing the budget or
+              removing a high-consumption appliance from the plan.
             </p>
           )}
-          {plan && (
-            <>
-              <ForecastChart forecastDailyKwh={plan.forecast_daily_kwh} />
-              <PlanResults plan={plan} />
-            </>
-          )}
+
+          <div className="actions span-2">
+            <button className="secondary" onClick={() => setStep(1)}>
+              Edit appliances
+            </button>
+            <button className="primary" disabled={loading} onClick={() => runPlan(true)}>
+              {loading ? "Recalculating..." : "Re-run What-If"}
+            </button>
+          </div>
         </section>
-      </main>
+      )}
     </div>
   );
 }

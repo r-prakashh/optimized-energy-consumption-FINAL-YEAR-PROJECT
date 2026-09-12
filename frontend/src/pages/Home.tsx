@@ -3,27 +3,27 @@ import { Link } from "react-router-dom";
 import { ApplianceIcon } from "../components/ApplianceIcons";
 
 const STATS = [
-  { value: "5", label: "REFIT houses trained on" },
-  { value: "2,704", label: "house-days of real data" },
+  { value: "2,704", label: "REFIT house-days trained on" },
   { value: "23.3%", label: "WMAPE forecast accuracy" },
-  { value: "8", label: "appliance categories" },
+  { value: "10", label: "TN-relevant appliance types" },
+  { value: "Live", label: "Chennai weather-adjusted AC load" },
 ];
 
 const STEPS = [
   {
     n: "01",
     title: "Forecast",
-    body: "A LightGBM model trained on REFIT household data learns your weekday, weekend, and seasonal consumption patterns to project the days ahead.",
+    body: "A LightGBM model trained on real household data learns your weekday, weekend, and seasonal consumption rhythm to project the days ahead.",
   },
   {
     n: "02",
     title: "Estimate",
-    body: "Appliance-level energy is estimated from your selected devices and usage hours, then converted into a projected electricity bill using slab-based tariffs.",
+    body: "Appliance-level energy is estimated from your selected devices and usage hours — AC load is further adjusted using live Tamil Nadu temperature — then priced against TNEB's domestic tariff slabs.",
   },
   {
     n: "03",
     title: "Optimize",
-    body: "If the projection exceeds your budget, a transparent rule-based optimizer trims hours on your most flexible, highest-draw appliances first — never touching essentials.",
+    body: "If the projection exceeds your budget, a transparent rule-based optimizer trims hours on your most flexible, highest-draw appliances first, and flags unattended loads worth shifting to off-peak hours.",
   },
 ];
 
@@ -34,6 +34,8 @@ const APPLIANCES = [
   "lighting",
   "refrigerator",
   "washing_machine",
+  "water_heater",
+  "motor_pump",
   "computer",
   "microwave",
 ];
@@ -55,6 +57,10 @@ const FAQS = [
     q: "Why rule-based optimization instead of reinforcement learning?",
     a: "Every recommendation needs to be explainable to a household — traceable to appliance flexibility, consumption share, and remaining budget gap. A transparent greedy optimizer gives that; a black-box RL agent doesn't.",
   },
+  {
+    q: "This is built for Tamil Nadu — so why UK training data?",
+    a: "REFIT is the only public dataset with appliance-level household data at this scale. It's a real limitation, not hidden: UK homes are heating-driven and TN homes are cooling-driven, so the forecaster's learned seasonality doesn't fully transfer. That's why AC load — the biggest TN-specific load — gets its own live-weather adjustment layered on top, kept deliberately separate from the REFIT-trained model. Full writeup on the Methodology page.",
+  },
 ];
 
 export function Home() {
@@ -70,10 +76,10 @@ export function Home() {
             Optimize your <em>budget</em>.
           </h1>
           <p className="hero-sub">
-            WattWise predicts your household electricity consumption, estimates
-            what it will cost, and builds a personalized appliance schedule
-            that keeps you inside the budget you set — all grounded in real
-            REFIT household data.
+            WattWise predicts your household electricity consumption against
+            TNEB's tariff, estimates what it will cost, and builds a
+            personalized appliance schedule that keeps you inside the budget
+            you set — with AC load adjusted to live Tamil Nadu weather.
           </p>
           <div className="hero-actions">
             <Link to="/plan" className="btn-primary">

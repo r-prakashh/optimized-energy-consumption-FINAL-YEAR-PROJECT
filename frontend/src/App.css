@@ -192,23 +192,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-secondary);
-  transition: color 0.15s ease, background 0.15s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .appliance-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
 
 .appliance-card.active .appliance-icon {
-  color: var(--accent);
-  background: rgba(229, 9, 20, 0.14);
+  transform: scale(1.06);
+  box-shadow: inset 0 0 0 1.5px var(--accent), 0 0 0 3px var(--accent-glow);
 }
 
 .appliance-card-title {
@@ -473,8 +473,7 @@ em {
   position: sticky;
   top: 0;
   z-index: 50;
-  backdrop-filter: blur(16px);
-  background: rgba(10, 10, 12, 0.72);
+  background: rgba(9, 9, 11, 0.96);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -997,4 +996,465 @@ em {
 .fine-print {
   font-size: 0.82rem !important;
   color: var(--text-tertiary) !important;
+}
+
+/* ==========================================================================
+   Planner wizard
+   ========================================================================== */
+
+.stepper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.step-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.step-pill:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.step-pill-n {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+}
+
+.step-pill.active {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.1), var(--bg-elevated));
+}
+
+.step-pill.active .step-pill-n {
+  background: var(--accent);
+  color: white;
+}
+
+.step-pill.done {
+  color: var(--text-secondary);
+}
+
+.step-pill.done .step-pill-n {
+  background: var(--ok);
+  color: #0a0a0c;
+}
+
+.wizard-panel {
+  max-width: 720px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.results-grid .span-2 {
+  grid-column: 1 / -1;
+}
+
+.results-grid .actions {
+  margin-top: 0;
+}
+
+/* Budget gauge */
+
+.gauge {
+  padding: 4px 0;
+}
+
+.gauge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.gauge-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.gauge-value {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.gauge-value.over {
+  color: var(--warn);
+}
+
+.gauge-value.under {
+  color: var(--ok);
+}
+
+.gauge-of {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.gauge-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  overflow: visible;
+}
+
+.gauge-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.gauge-fill.under {
+  background: linear-gradient(90deg, #1e9e5a, var(--ok));
+}
+
+.gauge-fill.over {
+  background: linear-gradient(90deg, var(--warn), #ff4d4d);
+}
+
+.gauge-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 22px;
+  background: var(--text-tertiary);
+}
+
+.gauge-footer {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* Donut chart */
+
+.donut-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.donut-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.donut-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.donut-legend-label {
+  color: var(--text-secondary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.donut-legend-value {
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+/* Before/after compare bars */
+
+.compare-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.compare-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.compare-icon .appliance-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.compare-icon .appliance-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.compare-body {
+  flex: 1;
+}
+
+.compare-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.compare-label {
+  font-weight: 600;
+}
+
+.compare-hours .was {
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+.compare-hours .now {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.compare-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+}
+
+.compare-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.compare-bar.original {
+  background: var(--border-color-hover);
+}
+
+.compare-bar.recommended {
+  background: var(--accent);
+}
+
+.compare-bar.recommended.reduced {
+  background: var(--ok);
+}
+
+/* ToD shift card */
+
+.tod-card {
+  background: linear-gradient(180deg, rgba(46, 204, 113, 0.06), transparent);
+  border: 1px solid rgba(46, 204, 113, 0.25);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.tod-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tod-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tod-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--ok-bg);
+  color: var(--ok);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.tod-sub {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.tod-sub strong {
+  color: var(--ok);
+}
+
+.tod-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tod-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+}
+
+.tod-row .appliance-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.tod-row .appliance-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tod-label {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tod-saving {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--ok);
+}
+
+/* ==========================================================================
+   Appliance spec fields, remove button, action plan
+   ========================================================================== */
+
+.wizard-panel-wide {
+  max-width: 900px;
+}
+
+.hint {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: -8px 0 16px;
+}
+
+.remove-btn {
+  border: none;
+  background: none;
+  color: var(--text-tertiary);
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.remove-btn:hover {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.spec-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.spec-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-tertiary);
+}
+
+.spec-field select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.action-plan {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.action-plan > li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.action-plan-sub {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.action-plan-sub > li {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  background: var(--bg-elevated);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 8px 8px 0;
 }

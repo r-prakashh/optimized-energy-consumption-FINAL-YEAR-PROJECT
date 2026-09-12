@@ -45,13 +45,24 @@ def _chronological_split_per_house(df: pd.DataFrame, test_size: float = 0.2):
     return pd.concat(train_parts), pd.concat(test_parts)
 
 
-def train(processed_path: Path, model_out: Path = MODEL_DIR / "household_forecaster.txt"):
+def train(
+    processed_path: Path,
+    model_out: Path = MODEL_DIR / "household_forecaster.txt",
+    feature_columns: list[str] = FEATURE_COLUMNS,
+):
+    """
+    `feature_columns` defaults to the deployed feature set (no weather).
+    Pass an extended list (see experiments/weather_ablation.py) to train a
+    comparison model for reporting — the shipped model deliberately excludes
+    weather since inference serves Tamil Nadu users while REFIT's weather
+    signal is UK-specific (see app/ml/weather.py's module docstring).
+    """
     df = pd.read_parquet(processed_path)
-    df = df.dropna(subset=FEATURE_COLUMNS + [TARGET_COLUMN])
+    df = df.dropna(subset=feature_columns + [TARGET_COLUMN])
 
     train_df, test_df = _chronological_split_per_house(df)
-    X_train, y_train = train_df[FEATURE_COLUMNS], train_df[TARGET_COLUMN]
-    X_test, y_test = test_df[FEATURE_COLUMNS], test_df[TARGET_COLUMN]
+    X_train, y_train = train_df[feature_columns], train_df[TARGET_COLUMN]
+    X_test, y_test = test_df[feature_columns], test_df[TARGET_COLUMN]
 
     model = lgb.LGBMRegressor(
         n_estimators=300,

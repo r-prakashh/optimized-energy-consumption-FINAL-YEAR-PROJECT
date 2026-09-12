@@ -4,6 +4,15 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000
 
 export const api = axios.create({ baseURL: API_BASE_URL });
 
+export interface SpecFieldSchema {
+  key: string;
+  label: string;
+  type: "select" | "boolean";
+  options: (string | number)[];
+  default: string | number | boolean;
+  unit: string;
+}
+
 export interface ApplianceCatalogEntry {
   category: string;
   label: string;
@@ -11,11 +20,16 @@ export interface ApplianceCatalogEntry {
   flexibility: "none" | "low" | "medium" | "high";
   min_hours: number;
   max_hours: number;
+  shiftable: boolean;
+  specs: SpecFieldSchema[];
 }
+
+export type ApplianceSpecs = Record<string, string | number | boolean>;
 
 export interface ApplianceInput {
   category: string;
   hours_per_day: number;
+  specs: ApplianceSpecs;
 }
 
 export interface PlanRequest {
@@ -33,6 +47,13 @@ export interface ApplianceResult {
   reduced: boolean;
 }
 
+export interface TodShiftOpportunity {
+  category: string;
+  label: string;
+  daily_kwh: number;
+  estimated_saving_per_day: number;
+}
+
 export interface PlanResponse {
   projected_daily_kwh: number;
   projected_total_kwh: number;
@@ -43,6 +64,9 @@ export interface PlanResponse {
   duration_days: number;
   appliances: ApplianceResult[];
   forecast_daily_kwh: number[];
+  tod_shift_opportunities: TodShiftOpportunity[];
+  tod_total_saving_for_period: number;
+  action_plan: string[];
 }
 
 export async function fetchApplianceCatalog(): Promise<ApplianceCatalogEntry[]> {

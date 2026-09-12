@@ -1,91 +1,152 @@
-import type { JSX } from "react";
+import type { CSSProperties, JSX } from "react";
 
 /**
- * Hand-tuned line icons per appliance category — kept as inline SVG (no
- * external image requests, no licensing concerns, crisp at any size/theme).
+ * Filled, two-tone illustrations per appliance category — a step up from
+ * thin line icons toward an actual "product image" feel, while staying
+ * inline SVG (zero external requests, no licensing concerns, crisp in any
+ * theme, instant load). Each has a colored backdrop plate plus a glyph in
+ * a complementary tone, in the style of modern app iconography.
  */
-const icons: Record<string, JSX.Element> = {
+const PALETTE: Record<string, { bg: string; fg: string; accent: string }> = {
+  air_conditioner: { bg: "#1c3a5e", fg: "#eaf4ff", accent: "#5ec8f8" },
+  fan: { bg: "#2a2a1c", fg: "#fff6df", accent: "#f5c542" },
+  television: { bg: "#1a1a24", fg: "#dfe6ff", accent: "#7a8cff" },
+  lighting: { bg: "#3a2e10", fg: "#fff3d0", accent: "#ffc233" },
+  refrigerator: { bg: "#12333b", fg: "#e4faff", accent: "#4fd6e8" },
+  washing_machine: { bg: "#12305a", fg: "#e7f0ff", accent: "#5b8dff" },
+  computer: { bg: "#241c3a", fg: "#ecdfff", accent: "#a074ff" },
+  microwave: { bg: "#3a1c1c", fg: "#ffe4e0", accent: "#ff7a5c" },
+  water_heater: { bg: "#4a1616", fg: "#ffe6e0", accent: "#ff5c4d" },
+  motor_pump: { bg: "#123a2e", fg: "#e2fff2", accent: "#3ddc9a" },
+};
+
+const glyphs: Record<string, JSX.Element> = {
   air_conditioner: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="4" y="14" width="40" height="16" rx="4" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M10 24h4M18 24h4M26 24h4M34 24h4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M10 34c0 2 1.5 4 3 4M18 34c0 3 2 5 3 5M27 34c0 3-2 5-3 5M35 34c0 2-1.5 4-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="7" y="15" width="34" height="14" rx="3.5" fill="var(--fg)" />
+      <rect x="10.5" y="19.5" width="2.5" height="5" rx="1.25" fill="var(--bg)" />
+      <rect x="16" y="19.5" width="2.5" height="5" rx="1.25" fill="var(--bg)" />
+      <rect x="21.5" y="19.5" width="2.5" height="5" rx="1.25" fill="var(--bg)" />
+      <rect x="27" y="19.5" width="2.5" height="5" rx="1.25" fill="var(--bg)" />
+      <rect x="32.5" y="19.5" width="2.5" height="5" rx="1.25" fill="var(--bg)" />
+      <path d="M11 32c0 2 2 3 2 5M17 32c0 3 2.5 4.5 2.5 7M27.5 32c0 3-2.5 4.5-2.5 7M34 32c0 2-2 3-2 5"
+        stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" fill="none" />
+    </>
   ),
   fan: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <circle cx="24" cy="24" r="3.2" stroke="currentColor" strokeWidth="2.2" />
-      <path
-        d="M24 21c-2-5-1-11 4-13 4-1.6 8 1 7 5-1 4-6 6-11 8Z"
-        stroke="currentColor" strokeWidth="2" strokeLinejoin="round"
-      />
-      <path
-        d="M27 24c5-2 11-1 13 4 1.6 4-1 8-5 7-4-1-6-6-8-11Z"
-        stroke="currentColor" strokeWidth="2" strokeLinejoin="round"
-      />
-      <path
-        d="M21 27c-5 2-11 1-13-4-1.6-4 1-8 5-7 4 1 6 6 8 11Z"
-        stroke="currentColor" strokeWidth="2" strokeLinejoin="round"
-      />
-      <path d="M24 40v3M24 5v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <>
+      <circle cx="24" cy="20" r="3.4" fill="var(--accent)" />
+      <path d="M24 17c-2-5-1-10 3.5-12 4-1.6 7.5 1 6.5 4.5-1 3.6-5.5 5.5-10 7.5Z" fill="var(--fg)" />
+      <path d="M26.6 19.6c4.6-2 9.6-1 11.5 3 1.6 3.6-1 7-4.5 6-3.6-1-5.5-5-7-9Z" fill="var(--fg)" opacity="0.85" />
+      <path d="M21.4 22.4c-4.6 2-9.6 1-11.5-3-1.6-3.6 1-7 4.5-6 3.6 1 5.5 5 7 9Z" fill="var(--fg)" opacity="0.7" />
+      <rect x="22.5" y="30" width="3" height="10" rx="1.5" fill="var(--fg)" opacity="0.5" />
+    </>
   ),
   television: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="5" y="9" width="38" height="24" rx="3" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M17 39h14M24 33v6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="6" y="10" width="36" height="21" rx="2.5" fill="var(--fg)" />
+      <rect x="9" y="13" width="30" height="15" rx="1" fill="var(--bg)" />
+      <path d="M12 17h14M12 21h9" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+      <rect x="20" y="33" width="8" height="3" rx="1.5" fill="var(--fg)" opacity="0.6" />
+    </>
   ),
   lighting: (
-    <svg viewBox="0 0 48 48" fill="none">
+    <>
       <path
         d="M24 6c-7 0-12 5-12 12 0 5 3 8 5 11 1.5 2 2 3 2 5h10c0-2 .5-3 2-5 2-3 5-6 5-11 0-7-5-12-12-12Z"
-        stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"
+        fill="var(--fg)"
       />
-      <path d="M19 39h10M20 43h8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
+      <path d="M20 21l3-6 2 3 3-4" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <rect x="19" y="36" width="10" height="3" rx="1.5" fill="var(--fg)" opacity="0.7" />
+      <rect x="20" y="40" width="8" height="2.5" rx="1.25" fill="var(--fg)" opacity="0.5" />
+    </>
   ),
   refrigerator: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="11" y="4" width="26" height="40" rx="3" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M11 19h26" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M16 9v6M16 24v6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="11" y="4" width="26" height="40" rx="3.5" fill="var(--fg)" />
+      <rect x="11" y="18" width="26" height="1.5" fill="var(--bg)" />
+      <rect x="14.5" y="8" width="2.5" height="6" rx="1.25" fill="var(--accent)" />
+      <rect x="14.5" y="23" width="2.5" height="6" rx="1.25" fill="var(--accent)" />
+    </>
   ),
   washing_machine: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="6" y="6" width="36" height="36" rx="4" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M6 13h36" stroke="currentColor" strokeWidth="2.2" />
-      <circle cx="12" cy="9.5" r="1.4" fill="currentColor" />
-      <circle cx="17" cy="9.5" r="1.4" fill="currentColor" />
-      <circle cx="24" cy="27" r="9" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M20 27a4 4 0 0 0 7 2.6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="6" y="6" width="36" height="36" rx="5" fill="var(--fg)" />
+      <rect x="6" y="6" width="36" height="7" rx="5" fill="var(--fg)" />
+      <circle cx="12" cy="9.5" r="1.3" fill="var(--bg)" />
+      <circle cx="17" cy="9.5" r="1.3" fill="var(--bg)" />
+      <circle cx="24" cy="27" r="10.5" fill="var(--bg)" />
+      <circle cx="24" cy="27" r="7.5" fill="var(--accent)" opacity="0.85" />
+      <path d="M20 27a4 4 0 0 0 7 2.6" stroke="var(--fg)" strokeWidth="2" strokeLinecap="round" fill="none" />
+    </>
   ),
   computer: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="6" y="9" width="36" height="23" rx="2.5" stroke="currentColor" strokeWidth="2.2" />
-      <path d="M17 39h14M24 32v7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M13 16h22M13 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="6" y="8" width="36" height="24" rx="2.5" fill="var(--fg)" />
+      <rect x="9" y="11" width="30" height="18" rx="1" fill="var(--bg)" />
+      <path d="M13 16h20M13 20h14M13 24h17" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+      <rect x="17" y="35" width="14" height="3" rx="1.5" fill="var(--fg)" opacity="0.6" />
+    </>
   ),
   microwave: (
-    <svg viewBox="0 0 48 48" fill="none">
-      <rect x="4" y="12" width="40" height="24" rx="3" stroke="currentColor" strokeWidth="2.2" />
-      <rect x="9" y="17" width="20" height="14" rx="1.5" stroke="currentColor" strokeWidth="2" />
-      <circle cx="36" cy="21" r="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M32 28h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+    <>
+      <rect x="4" y="11" width="40" height="26" rx="3.5" fill="var(--fg)" />
+      <rect x="8" y="15" width="21" height="18" rx="1.5" fill="var(--bg)" />
+      <rect x="10.5" y="17.5" width="16" height="13" rx="1" fill="var(--accent)" opacity="0.55" />
+      <circle cx="35.5" cy="20" r="2.2" fill="var(--accent)" />
+      <rect x="32" y="26" width="7" height="2.2" rx="1.1" fill="var(--bg)" />
+      <rect x="32" y="30" width="7" height="2.2" rx="1.1" fill="var(--bg)" />
+    </>
+  ),
+  water_heater: (
+    <>
+      <rect x="13" y="5" width="22" height="37" rx="9" fill="var(--fg)" />
+      <path
+        d="M20 15c0 2-2.5 2.4-2.5 4.5s2.5 2.5 2.5 4.5-2.5 2.5-2.5 4.5 2.5 2.5 2.5 4.5"
+        stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" fill="none"
+      />
+      <path
+        d="M29 15c0 2-2.5 2.4-2.5 4.5s2.5 2.5 2.5 4.5-2.5 2.5-2.5 4.5 2.5 2.5 2.5 4.5"
+        stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" fill="none"
+      />
+      <circle cx="24" cy="11" r="2" fill="var(--bg)" />
+    </>
+  ),
+  motor_pump: (
+    <>
+      <circle cx="19" cy="24" r="11" fill="var(--fg)" />
+      <circle cx="19" cy="24" r="6.5" fill="var(--bg)" />
+      <path d="M19 20v4l3 2" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <rect x="29" y="21" width="11" height="6" rx="2" fill="var(--fg)" />
+      <path d="M11 39c3-3 7-3 10 0s7 3 10 0" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+    </>
   ),
 };
 
-const fallback = (
-  <svg viewBox="0 0 48 48" fill="none">
-    <rect x="8" y="8" width="32" height="32" rx="6" stroke="currentColor" strokeWidth="2.2" />
-    <path d="M24 16v10l6 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+const fallbackGlyph = (
+  <>
+    <rect x="8" y="8" width="32" height="32" rx="7" fill="var(--fg)" />
+    <path d="M24 16v10l6 4" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+  </>
 );
 
 export function ApplianceIcon({ category }: { category: string }) {
-  return <span className="appliance-icon">{icons[category] ?? fallback}</span>;
+  const colors = PALETTE[category] ?? { bg: "#1c1c22", fg: "#eee", accent: "#e50914" };
+  const glyph = glyphs[category] ?? fallbackGlyph;
+
+  return (
+    <span
+      className="appliance-icon"
+      style={
+        {
+          background: colors.bg,
+          "--fg": colors.fg,
+          "--bg": colors.bg,
+          "--accent": colors.accent,
+        } as CSSProperties
+      }
+    >
+      <svg viewBox="0 0 48 48">{glyph}</svg>
+    </span>
+  );
 }

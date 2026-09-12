@@ -4,9 +4,11 @@ from pathlib import Path
 import pandas as pd
 from fastapi import APIRouter
 
+from app.core.appliance_specs import get_specs_schema
 from app.core.config import APPLIANCE_CATALOG
 from app.ml.models.appliance_model import ApplianceModel
 from app.ml.models.household_forecaster import HouseholdForecaster, MODEL_DIR
+from app.optimization.action_plan import generate_action_plan
 from app.optimization.optimizer import ApplianceUsage, optimize
 from app.schemas.plan import PlanRequest, PlanResponse, WhatIfRequest
 
@@ -22,9 +24,16 @@ _household_forecaster = (
 
 @router.get("/appliances")
 def list_appliances():
-    """Appliance catalog for the frontend to render selection checkboxes."""
+    """Appliance catalog for the frontend to render selection checkboxes,
+    each annotated with its optional spec fields (e.g. AC tonnage/star
+    rating) for a per-model, not just per-category, estimate."""
+    specs_schema = get_specs_schema()
     return [
-        {"category": key, **{k: v for k, v in val.items() if k != "refit_channel_keys"}}
+        {
+            "category": key,
+            **{k: v for k, v in val.items() if k != "refit_channel_keys"},
+            "specs": specs_schema.get(key, []),
+        }
         for key, val in APPLIANCE_CATALOG.items()
     ]
 
@@ -41,7 +50,7 @@ def _baseline_forecast(usages: list[ApplianceUsage], duration_days: int) -> list
         history_dates = [today - timedelta(days=30 - i) for i in range(30)]
         history_kwh = [
             sum(
-                _appliance_model.estimate_kwh(u.category, u.hours_per_day, d.weekday())
+                _appliance_model.estimate_kwh(u.category, u.hours_per_day, d.weekday(), u.specs)
                 for u in usages
             )
             for d in history_dates
@@ -53,7 +62,7 @@ def _baseline_forecast(usages: list[ApplianceUsage], duration_days: int) -> list
     return [
         sum(
             _appliance_model.estimate_kwh(
-                u.category, u.hours_per_day, (today + timedelta(days=i)).weekday()
+                u.category, u.hours_per_day, (today + timedelta(days=i)).weekday(), u.specs
             )
             for u in usages
         )
@@ -62,7 +71,8 @@ def _baseline_forecast(usages: list[ApplianceUsage], duration_days: int) -> list
 
 
 def _run_plan(payload: PlanRequest) -> PlanResponse:
-    usages = [ApplianceUsage(a.category, a.hours_per_day) for a in payload.appliances]
+    usages = [ApplianceUsage(a.category, a.hours_per_day, a.specs) for a in payload.appliances]
+    specs_by_category = {a.category: a.specs for a in payload.appliances}
 
     forecast = _baseline_forecast(usages, payload.duration_days)
 
@@ -72,6 +82,7 @@ def _run_plan(payload: PlanRequest) -> PlanResponse:
         budget=payload.budget,
         appliance_model=_appliance_model,
     )
+    action_plan = generate_action_plan(result, specs_by_category)
 
     return PlanResponse(
         projected_daily_kwh=result.projected_daily_kwh,
@@ -93,6 +104,17 @@ def _run_plan(payload: PlanRequest) -> PlanResponse:
             for a in result.appliances
         ],
         forecast_daily_kwh=[round(v, 3) for v in forecast],
+        tod_shift_opportunities=[
+            {
+                "category": o.category,
+                "label": o.label,
+                "daily_kwh": o.daily_kwh,
+                "estimated_saving_per_day": o.estimated_saving,
+            }
+            for o in result.tod_shift_opportunities
+        ],
+        tod_total_saving_for_period=round(result.tod_total_saving * payload.duration_days, 2),
+        action_plan=action_plan,
     )
 
 
