@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ApplianceIcon } from "../components/ApplianceIcons";
+import { HeroIllustration } from "../components/HeroIllustration";
 
 const STATS = [
   { value: "2,704", label: "REFIT house-days trained on" },
@@ -67,7 +68,9 @@ export function Home() {
   return (
     <>
       <section className="hero">
-        <div className="hero-glow" aria-hidden="true" />
+        <div className="hero-bg" aria-hidden="true">
+          <HeroIllustration />
+        </div>
         <div className="hero-content">
           <span className="eyebrow">AI-based household energy planning</span>
           <h1>
