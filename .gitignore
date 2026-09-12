@@ -1,0 +1,36 @@
+# Datasets (never commit — see data/README.md for download instructions)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.csv
+!frontend/**/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Trained model artifacts are tracked EXCEPT large intermediate ones
+backend/models_store/*.tmp
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env / secrets
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
