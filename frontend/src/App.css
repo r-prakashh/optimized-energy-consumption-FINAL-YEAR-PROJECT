@@ -625,6 +625,25 @@ em {
   position: absolute;
   inset: 0;
   z-index: 0;
+  background: #0a0a0c;
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(600px 500px at 18% 20%, rgba(229, 9, 20, 0.35), transparent 65%),
+    radial-gradient(560px 480px at 85% 15%, rgba(122, 46, 255, 0.22), transparent 65%),
+    radial-gradient(700px 560px at 78% 88%, rgba(255, 138, 61, 0.22), transparent 65%),
+    radial-gradient(500px 420px at 12% 85%, rgba(76, 139, 245, 0.16), transparent 65%);
+  filter: blur(10px);
+  animation: heroDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes heroDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.06); }
 }
 
 .hero-bg::after {
@@ -632,8 +651,14 @@ em {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 620px 320px at 50% 44%, rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0) 70%),
-    linear-gradient(180deg, rgba(10, 10, 12, 0.35) 0%, rgba(10, 10, 12, 0.05) 35%, rgba(10, 10, 12, 0.5) 100%);
+    radial-gradient(ellipse 640px 340px at 50% 44%, rgba(10, 10, 12, 0.5), rgba(10, 10, 12, 0) 72%),
+    linear-gradient(180deg, rgba(10, 10, 12, 0.25) 0%, rgba(10, 10, 12, 0) 30%, rgba(10, 10, 12, 0.55) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg::before {
+    animation: none;
+  }
 }
 
 .hero-illustration {
