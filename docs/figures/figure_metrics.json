@@ -1,0 +1,169 @@
+{
+  "forecasting": {
+    "n_train": 2161,
+    "n_test": 543,
+    "models": {
+      "Naive (yesterday)": {
+        "MAE": 3.123920273173726,
+        "RMSE": 4.705475665049734,
+        "WMAPE": 28.525091480411458
+      },
+      "Seasonal naive (last week)": {
+        "MAE": 3.599639352363413,
+        "RMSE": 5.171815197710364,
+        "WMAPE": 32.86897002603024
+      },
+      "7-day moving average": {
+        "MAE": 2.980614919027157,
+        "RMSE": 4.1816393911587575,
+        "WMAPE": 27.21654389302035
+      },
+      "Linear regression": {
+        "MAE": 2.6732920748332614,
+        "RMSE": 3.880709718257246,
+        "WMAPE": 24.41032238988803
+      },
+      "Random forest": {
+        "MAE": 2.53042017753628,
+        "RMSE": 3.7657717495682728,
+        "WMAPE": 23.105732776838803
+      },
+      "LightGBM (deployed)": {
+        "MAE": 2.55643786915641,
+        "RMSE": 3.7729324666836455,
+        "WMAPE": 23.343305111813713
+      }
+    },
+    "lightgbm_by_house": {
+      "1": {
+        "MAE": 2.449945783275709,
+        "RMSE": 3.561380123558832,
+        "WMAPE": 28.924889001872593
+      },
+      "2": {
+        "MAE": 4.078186884724847,
+        "RMSE": 5.576094346867547,
+        "WMAPE": 43.85518673269172
+      },
+      "3": {
+        "MAE": 2.6623064471005713,
+        "RMSE": 3.685210509512281,
+        "WMAPE": 19.741534818353994
+      },
+      "4": {
+        "MAE": 1.293855293751114,
+        "RMSE": 1.9512494734294952,
+        "WMAPE": 17.027493273093125
+      },
+      "5": {
+        "MAE": 2.5692325706546217,
+        "RMSE": 3.604891337651471,
+        "WMAPE": 16.678828940351035
+      }
+    }
+  },
+  "appliances": {
+    "reference_temp_c": 30.0,
+    "appliances": [
+      {
+        "appliance": "Air Conditioner",
+        "hours_per_day": 7,
+        "kwh_month": 398.4,
+        "share_pct": 63.5
+      },
+      {
+        "appliance": "Refrigerator",
+        "hours_per_day": 24,
+        "kwh_month": 90.0,
+        "share_pct": 14.4
+      },
+      {
+        "appliance": "Ceiling / Table Fan",
+        "hours_per_day": 14,
+        "kwh_month": 31.5,
+        "share_pct": 5.0
+      },
+      {
+        "appliance": "Water Heater / Geyser",
+        "hours_per_day": 0.5,
+        "kwh_month": 25.9,
+        "share_pct": 4.1
+      },
+      {
+        "appliance": "Computer / Laptop",
+        "hours_per_day": 4,
+        "kwh_month": 18.0,
+        "share_pct": 2.9
+      },
+      {
+        "appliance": "Washing Machine",
+        "hours_per_day": 1,
+        "kwh_month": 16.2,
+        "share_pct": 2.6
+      },
+      {
+        "appliance": "Television",
+        "hours_per_day": 5,
+        "kwh_month": 14.2,
+        "share_pct": 2.3
+      },
+      {
+        "appliance": "Water Motor Pump",
+        "hours_per_day": 0.5,
+        "kwh_month": 11.2,
+        "share_pct": 1.8
+      },
+      {
+        "appliance": "Microwave",
+        "hours_per_day": 0.3,
+        "kwh_month": 10.8,
+        "share_pct": 1.7
+      },
+      {
+        "appliance": "Lights",
+        "hours_per_day": 6,
+        "kwh_month": 10.8,
+        "share_pct": 1.7
+      }
+    ],
+    "total_kwh_month": 627.0,
+    "scenarios": [
+      {
+        "scenario": "Small flat (2 fans, TV, fridge)",
+        "budget": 380,
+        "before": 464.83,
+        "after": 374.94,
+        "budget_met": true,
+        "kwh_before": 198.9,
+        "kwh_after": 179.775
+      },
+      {
+        "scenario": "1-AC family home",
+        "budget": 3000,
+        "before": 4085.55,
+        "after": 2770.79,
+        "budget_met": true,
+        "kwh_before": 585.8,
+        "kwh_after": 471.93
+      },
+      {
+        "scenario": "Work-from-home (AC + PC all day)",
+        "budget": 5500,
+        "before": 7465.52,
+        "after": 5145.36,
+        "budget_met": true,
+        "kwh_before": 878.4,
+        "kwh_after": 677.52
+      },
+      {
+        "scenario": "Large home (2-ton AC, geyser)",
+        "budget": 10500,
+        "before": 14588.52,
+        "after": 10463.78,
+        "budget_met": true,
+        "kwh_before": 1495.1,
+        "kwh_after": 1137.99
+      }
+    ]
+  }
+}
