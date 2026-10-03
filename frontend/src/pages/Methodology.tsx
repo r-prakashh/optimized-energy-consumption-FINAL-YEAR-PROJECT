@@ -193,6 +193,71 @@ export function Methodology() {
       </section>
 
       <section className="section section-narrow">
+        <h2>Bill upload &amp; OCR</h2>
+        <p>
+          Residents can upload past bills on the <strong>Bill Insights</strong> page. Digital PDF
+          e-bills are read straight from their embedded text layer (<code>pypdf</code>) with no OCR
+          error. Scanned PDFs and phone photos are rasterised (<code>pypdfium2</code>) and passed to{" "}
+          <strong>RapidOCR</strong>, PaddleOCR's text detection and recognition networks exported to
+          ONNX. It installs with pip alone (no system Tesseract binary), so it runs on Render's free
+          tier. A tolerant regex parser then pulls out units consumed, previous/present meter readings
+          (the meter difference overrides a misread units field), bill amount and assessment dates. It
+          also handles handwritten-style logs such as "Jan 2026 – 245 units – Rs 520". Handwriting is
+          the weakest case for classical OCR. When an Anthropic API key is configured, a Claude vision
+          pass with a strict JSON schema reads those uploads instead. Every extracted value is shown in
+          an editable table before analysis, so a misread digit gets corrected by the user and never
+          silently skews the forecast.
+        </p>
+      </section>
+
+      <section className="section section-narrow">
+        <h2>Bill-history trend &amp; forecast</h2>
+        <p>
+          Bills are irregular: TNEB bills bi-monthly, others monthly. Each bill's units are spread
+          uniformly over the days it covers and re-aggregated into calendar months. The LightGBM
+          forecaster above needs dense daily history, but a resident has a handful of monthly points,
+          so this layer runs a <strong>small-sample model tournament</strong> instead: naive,
+          seasonal-naive (scaled by a Tamil Nadu cooling-season index), damped Holt linear exponential
+          smoothing on the de-seasonalised series, and ridge regression on time + sin/cos(month).
+          They compete on a rolling-origin one-step-ahead backtest of the user's own history, and the
+          lowest-MAE model produces the forecast, with an 80% interval that widens with the horizon.
+        </p>
+        <p>
+          Unusual months are flagged with a robust z-score (median/MAD) on the de-seasonalised
+          series, so a hot May isn't flagged just for being May. They're also replaced by their seasonal
+          expectation before fitting, so one guest-heavy month doesn't bend the forecast. Advice is
+          generated from the trend, the anomalies, the TNEB slab position of the forecast month, and
+          the upcoming season. The <em>optimal usage target</em> is the slab boundary below the
+          forecast when reaching it needs at most a 20% cut, and a 10% efficiency target otherwise.
+        </p>
+      </section>
+
+      <section className="section section-narrow">
+        <h2>Appliance add / remove what-if</h2>
+        <p>
+          The <strong>What-If</strong> page costs each added or removed appliance with the same
+          spec-aware <code>ApplianceModel</code> the planner uses (AC tonnage, star rating, inverter,
+          live-weather AC multiplier), averaged over a week. It then layers the change onto the
+          household's own bill forecast, or onto a typed monthly baseline. The bill is recomputed
+          through the TNEB slabs on the <em>new total</em>, not with a flat rate, so a change that
+          pushes the home into a higher slab is priced correctly.
+        </p>
+      </section>
+
+      <section className="section section-narrow">
+        <h2>Volt, the assistant</h2>
+        <p>
+          Volt is a floating chat assistant available on every page. With an Anthropic API key it
+          runs on Claude with tool use: it calls the app's own <code>estimate_appliance_change</code>{" "}
+          and <code>estimate_bill_cost</code> functions rather than doing arithmetic itself, so its
+          numbers always match the planner and simulator. It also receives the user's bill analysis
+          as context, so it can answer questions like "what's my bill next month?". Without a key, an
+          offline intent engine answers the common questions (tariffs, appliance what-ifs, forecast,
+          saving tips) using the same estimators.
+        </p>
+      </section>
+
+      <section className="section section-narrow">
         <h2>Scope &amp; limitations</h2>
         <p>
           This is a software forecasting and planning platform — not a

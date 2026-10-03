@@ -76,6 +76,44 @@ Full writeup with citations: the in-app [Methodology page](frontend/src/pages/Me
 - **What-if is just a re-run**, not a separate model — see the `/what-if`
   endpoint, which reuses the identical pipeline with modified inputs.
 
+## Bill Insights, What-If and the Volt assistant
+
+Beyond the budget planner, WattWise now learns from a household's **own past bills**:
+
+- **Bill upload with OCR** (`/bills`, [app/bills/](backend/app/bills/)). Residents upload past
+  electricity bills as PDF e-bills, phone photos, scans or a handwritten list of readings.
+  Digital PDFs are read from their text layer (`pypdf`). Scans and photos go through
+  **RapidOCR** (PaddleOCR networks on ONNX Runtime, pure pip, no system Tesseract), then a
+  tolerant parser extracts units, meter readings, amount and dates. When `ANTHROPIC_API_KEY`
+  is set, a Claude vision pass reads handwriting and poor photos. Every value is editable
+  before analysis.
+- **Trend, anomaly and forecast model** ([app/ml/bill_trend.py](backend/app/ml/bill_trend.py)).
+  Bi-monthly and monthly bills are normalised to calendar months. A small-sample model
+  tournament (naive, seasonal-naive with a Tamil Nadu cooling index, damped Holt smoothing,
+  ridge regression) is scored by rolling-origin backtest on the user's own history, and the
+  winner forecasts the next 3-6 months with an 80% interval. A robust z-score flags unusual
+  months. The output includes plain-language advice and an *optimal usage target* tied to TNEB
+  slab boundaries.
+- **Appliance add/remove what-if** (`/simulator`,
+  [app/optimization/scenario.py](backend/app/optimization/scenario.py)). Shows how buying or
+  retiring appliances changes monthly units and the TNEB bill, layered on the bill forecast and
+  re-priced through the slabs (so slab jumps are caught).
+- **Volt, the smart assistant** ([app/assistant/chat.py](backend/app/assistant/chat.py),
+  [ChatWidget.tsx](frontend/src/components/ChatWidget.tsx)). A floating chat with an animated
+  power-orb mascot. With an API key it runs on Claude with tool use (it calls the app's own
+  estimators, so numbers match). Without one, an offline intent engine still answers tariff,
+  what-if, forecast and saving-tip questions.
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/bills/upload` | multipart PDFs/images -> extracted readings (nothing stored) |
+| `POST /api/bills/analyze` | readings -> monthly history, trend, anomalies, forecast, advice, target |
+| `POST /api/scenario` | add/remove appliance changes -> new monthly kWh and bill |
+| `POST /api/chat` | Volt assistant (Claude when configured, offline engine otherwise) |
+
+Optional: set `ANTHROPIC_API_KEY` (Render env var, or your shell locally) to enable the
+Claude-powered assistant and handwritten-bill reading. Everything works without it.
+
 ## Household forecaster accuracy — and an honest ablation
 
 Shipped model: LightGBM trained on REFIT houses 1-5 (2,704 house-days).
@@ -127,20 +165,26 @@ The appliance-level model runs on nameplate-wattage arithmetic instead — see
 backend/
   app/
     api/routes.py              REST endpoints: /appliances, /plan, /what-if
+    api/insights_routes.py     /bills/upload, /bills/analyze, /scenario, /chat
+    bills/                     OCR (pypdf / RapidOCR), bill-text parser, optional Claude vision reader
+    assistant/chat.py          Volt assistant: Claude tool-use + offline intent engine
     core/config.py             TN appliance catalog, TNEB tariff, ToD settings
     ml/weather.py              Open-Meteo: UK training weather + live TN weather (cached)
     ml/preprocessing/          REFIT -> model-ready parquet datasets (+ weather join)
     ml/models/                 Household forecaster + appliance duty-cycle models
     optimization/optimizer.py  Budget optimizer + ToD shift-savings analysis
+    optimization/scenario.py   Appliance add/remove what-if simulator
+    ml/bill_trend.py           Bill-history normalisation, model tournament, anomalies, advice
     schemas/                   Pydantic request/response models
   experiments/weather_ablation.py  Reporting-only accuracy comparison (not deployed)
   models_store/                Trained model artifacts (committed — small, KBs-MBs)
 frontend/
   src/
     api/client.ts              Typed API client
-    pages/                     Home (landing), Plan (step-wizard planner), Methodology
+    pages/                     Home, Plan (planner), Bills (bill insights), Simulator (what-if), Methodology
     components/                Appliance selector/icons, forecast chart, donut chart,
-                                budget gauge, before/after bars, ToD shift card
+                                budget gauge, before/after bars, ToD shift card,
+                                BillTrendChart, ChatWidget + VoltMascot (assistant)
 data/
   raw/                         REFIT CSVs (gitignored — see data/README.md)
   processed/                   Feature-engineered parquet files (gitignored)

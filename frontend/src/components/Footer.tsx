@@ -17,6 +17,8 @@ export function Footer() {
           <Link to="/">Home</Link>
           <Link to="/methodology">Methodology</Link>
           <Link to="/plan">Planner</Link>
+          <Link to="/bills">Bill Insights</Link>
+          <Link to="/simulator">What-If</Link>
         </div>
       </div>
       <div className="footer-bottom">

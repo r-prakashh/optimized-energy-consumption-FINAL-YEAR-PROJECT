@@ -1,0 +1,1018 @@
+/* Styles for Bill Insights, the Appliance What-If simulator and the Volt
+   assistant. Uses the design tokens defined in App.css. */
+
+/* ------------------------------------------------------------------ shared bits */
+
+button.small {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+}
+
+.muted {
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.stat-row.four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 860px) {
+  .stat-row.four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.inline-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-right: auto;
+}
+
+.inline-select select,
+.change-field select,
+.change-field input,
+.change-appliance select,
+.baseline-input input,
+.readings-table input {
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.inline-select select:focus,
+.change-field select:focus,
+.change-field input:focus,
+.change-appliance select:focus,
+.baseline-input input:focus,
+.readings-table input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ------------------------------------------------------------------ bills page */
+
+.dropzone {
+  border: 2px dashed var(--border-color-hover);
+  border-radius: 14px;
+  padding: 36px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg-elevated);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzone.over {
+  border-color: var(--accent);
+  background: rgba(229, 9, 20, 0.06);
+}
+
+.dropzone.busy {
+  cursor: progress;
+  animation: dz-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dz-pulse {
+  50% {
+    border-color: #ffd93d;
+  }
+}
+
+.dropzone-icon {
+  color: var(--accent);
+}
+
+.dropzone strong {
+  font-size: 1rem;
+}
+
+.dropzone span {
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+.file-results {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-results li {
+  display: flex;
+  gap: 12px;
+  font-size: 0.84rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--ok-bg);
+  color: var(--ok);
+  flex-wrap: wrap;
+}
+
+.file-results li.bad {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.file-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.readings-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.readings-head h3 {
+  font-size: 0.95rem;
+}
+
+.readings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.readings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  min-width: 640px;
+}
+
+.readings-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.readings-table td {
+  padding: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.readings-table input {
+  width: 100%;
+  min-width: 90px;
+}
+
+.readings-table input[type="date"] {
+  color-scheme: dark;
+  min-width: 140px;
+}
+
+.source-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.source-badge.src-ocr,
+.source-badge.src-pdf_text_layer {
+  color: #4c8bf5;
+  border-color: rgba(76, 139, 245, 0.35);
+}
+
+.source-badge.src-ai_vision {
+  color: #ffd93d;
+  border-color: rgba(255, 217, 61, 0.35);
+}
+
+.parse-notes {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: 0.8rem;
+  color: var(--warn);
+  line-height: 1.6;
+}
+
+.advice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.advice-card {
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid #4c8bf5;
+}
+
+.advice-card.warn {
+  border-left-color: var(--warn);
+}
+
+.advice-card.ok {
+  border-left-color: var(--ok);
+}
+
+.advice-card strong {
+  font-size: 0.92rem;
+}
+
+.advice-card p {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.target-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.target-card p {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  margin-top: 12px;
+  line-height: 1.55;
+}
+
+.target-numbers {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.target-numbers > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.target-big {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.target-big.ok {
+  color: var(--ok);
+}
+
+.target-arrow {
+  font-size: 1.6rem;
+  color: var(--text-tertiary);
+}
+
+.savings-line strong {
+  color: var(--ok);
+}
+
+.model-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.model-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.model-row.winner {
+  background: rgba(255, 217, 61, 0.08);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.model-row.winner span:first-child::after {
+  content: " \2605";
+  color: #ffd93d;
+}
+
+.model-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border-color);
+  overflow: hidden;
+}
+
+.model-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff9f1c, #ffd93d);
+}
+
+.next-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.next-steps h2 {
+  margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------------ simulator */
+
+.baseline-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .baseline-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.baseline-option {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  cursor: pointer;
+}
+
+.baseline-option.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.baseline-option.disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.baseline-option input[type="radio"] {
+  margin-top: 3px;
+  accent-color: var(--accent);
+}
+
+.baseline-option > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.baseline-option strong {
+  color: var(--text-primary);
+  font-size: 0.92rem;
+}
+
+.baseline-option a {
+  color: var(--accent);
+}
+
+.baseline-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.baseline-input input {
+  width: 110px;
+}
+
+.change-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.change-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent);
+}
+
+.change-row.remove {
+  border-left-color: var(--ok);
+}
+
+.change-toggle {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.change-toggle button {
+  border-radius: 0;
+  padding: 9px 12px;
+  font-size: 0.8rem;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.change-toggle button.on.add {
+  background: var(--accent);
+  color: #fff;
+}
+
+.change-toggle button.on.remove {
+  background: var(--ok);
+  color: #06210f;
+}
+
+.change-appliance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.change-appliance .appliance-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.change-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.change-field input {
+  width: 84px;
+}
+
+.change-row .remove-btn {
+  margin-left: auto;
+}
+
+.verdict {
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.verdict.up {
+  background: rgba(229, 9, 20, 0.1);
+  color: #ff6b6b;
+}
+
+.verdict.down {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.impact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.impact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.impact-row .appliance-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.impact-row > div {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.86rem;
+  flex: 1;
+}
+
+.impact-row > div span {
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+}
+
+.delta {
+  font-weight: 800;
+  font-size: 0.86rem;
+}
+
+.delta.up {
+  color: #ff6b6b;
+}
+
+.delta.down {
+  color: var(--ok);
+}
+
+.tip-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* ------------------------------------------------------------------ home features */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 860px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.feature-card h3 {
+  font-size: 1.05rem;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.feature-card .feature-link {
+  margin-top: auto;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+
+.feature-badge {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 217, 61, 0.12);
+  color: #ffd93d;
+}
+
+/* ------------------------------------------------------------------ Volt mascot */
+
+.volt {
+  overflow: visible;
+  display: block;
+}
+
+.volt-bob {
+  animation: volt-bob 3.2s ease-in-out infinite;
+  transform-origin: 60px 70px;
+}
+
+.volt-thinking .volt-bob {
+  animation: volt-think 0.9s ease-in-out infinite;
+}
+
+.volt-eyes {
+  animation: volt-blink 4.6s infinite;
+  transform-origin: 60px 70px;
+}
+
+.volt-sparks {
+  animation: volt-spark 1.6s ease-in-out infinite;
+}
+
+.volt-halo {
+  animation: volt-halo 3.2s ease-in-out infinite;
+  transform-origin: 60px 66px;
+}
+
+.volt-crest {
+  animation: volt-crest 2.4s ease-in-out infinite;
+  transform-origin: 60px 40px;
+}
+
+.volt-wave {
+  animation: volt-wave 1.1s ease-in-out infinite;
+}
+
+@keyframes volt-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes volt-think {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes volt-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes volt-spark {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes volt-halo {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes volt-crest {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes volt-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-28deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volt *,
+  .volt-launcher {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ Volt chat widget */
+
+.volt-launcher {
+  position: fixed;
+  right: 22px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #2a2410, #141417 70%);
+  border: 1px solid rgba(255, 217, 61, 0.35);
+  box-shadow: 0 10px 30px -8px rgba(255, 180, 30, 0.45), 0 0 0 6px rgba(255, 217, 61, 0.06);
+}
+
+.volt-launcher:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.volt-launcher.open {
+  width: 56px;
+  height: 56px;
+}
+
+.volt-close {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: #ffd93d;
+}
+
+.volt-nudge {
+  position: fixed;
+  right: 104px;
+  bottom: calc(42px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  background: #ffd93d;
+  color: #1d1b2f;
+  font-size: 0.82rem;
+  padding: 9px 14px;
+  border-radius: 14px 14px 4px 14px;
+  box-shadow: 0 10px 24px -10px rgba(255, 180, 30, 0.6);
+  animation: volt-nudge-in 0.4s ease-out both;
+}
+
+@keyframes volt-nudge-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+.volt-panel {
+  position: fixed;
+  right: 22px;
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  width: min(390px, calc(100vw - 32px));
+  height: min(580px, calc(100svh - 130px));
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 217, 61, 0.08);
+  overflow: hidden;
+  animation: volt-panel-in 0.22s ease-out both;
+}
+
+@keyframes volt-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (max-width: 480px) {
+  .volt-panel {
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+  .volt-launcher {
+    right: 16px;
+  }
+  .volt-nudge {
+    right: 96px;
+  }
+}
+
+.volt-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(255, 217, 61, 0.14), rgba(255, 159, 28, 0.04));
+  border-bottom: 1px solid var(--border-color);
+}
+
+.volt-head-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.volt-head-text strong {
+  font-size: 1rem;
+}
+
+.volt-head-text span {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.volt-head-text span::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  margin-right: 6px;
+}
+
+.volt-reset {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  font-size: 0.74rem;
+}
+
+.volt-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.volt-msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.volt-msg.user {
+  justify-content: flex-end;
+}
+
+.volt-msg-avatar {
+  flex-shrink: 0;
+}
+
+.volt-bubble {
+  max-width: 82%;
+  padding: 10px 13px;
+  border-radius: 14px;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.volt-bubble p + p {
+  margin-top: 6px;
+}
+
+.volt-msg.user .volt-bubble {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 4px;
+}
+
+.volt-typing {
+  display: flex;
+  gap: 4px;
+  padding: 14px;
+}
+
+.volt-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffd93d;
+  animation: volt-dot 1s infinite ease-in-out;
+}
+
+.volt-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.volt-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes volt-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.volt-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.volt-suggestions button {
+  text-align: left;
+  background: transparent;
+  border: 1px solid rgba(255, 217, 61, 0.3);
+  color: #ffe58a;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.volt-suggestions button:hover {
+  background: rgba(255, 217, 61, 0.08);
+}
+
+.volt-suggestions .volt-cta {
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.volt-input {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.volt-input textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  max-height: 120px;
+}
+
+.volt-input textarea:focus {
+  outline: none;
+  border-color: #ffd93d;
+}
+
+.volt-input button {
+  padding: 10px 16px;
+}

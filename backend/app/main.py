@@ -1,6 +1,15 @@
+# onnxruntime (the bill-OCR engine) must load its native DLLs before
+# LightGBM/scikit-learn pull in their OpenMP runtime — on Windows the reverse
+# order fails with "DLL initialization routine failed".
+try:
+    import onnxruntime  # noqa: F401
+except ImportError:
+    pass
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.insights_routes import router as insights_router
 from app.api.routes import router
 
 app = FastAPI(
@@ -21,6 +30,7 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix="/api")
+app.include_router(insights_router, prefix="/api")
 
 
 @app.get("/")

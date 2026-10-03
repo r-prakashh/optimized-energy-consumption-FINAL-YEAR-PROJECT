@@ -12,6 +12,12 @@ export function Navbar() {
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
             Home
           </NavLink>
+          <NavLink to="/bills" className={({ isActive }) => (isActive ? "active" : "")}>
+            Bill Insights
+          </NavLink>
+          <NavLink to="/simulator" className={({ isActive }) => (isActive ? "active" : "")}>
+            What-If
+          </NavLink>
           <NavLink to="/methodology" className={({ isActive }) => (isActive ? "active" : "")}>
             Methodology
           </NavLink>

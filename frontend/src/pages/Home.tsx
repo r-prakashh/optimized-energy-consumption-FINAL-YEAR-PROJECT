@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ApplianceIcon } from "../components/ApplianceIcons";
 import { HeroIllustration } from "../components/HeroIllustration";
+import { VoltMascot } from "../components/VoltMascot";
 
 const STATS = [
   { value: "2,704", label: "REFIT house-days trained on" },
@@ -102,6 +103,43 @@ export function Home() {
             <div className="stat-item-label">{s.label}</div>
           </div>
         ))}
+      </section>
+
+      <section className="section">
+        <div className="section-head">
+          <span className="eyebrow">Your own data</span>
+          <h2>
+            Learn from your <em>past bills</em>
+          </h2>
+        </div>
+        <div className="feature-grid">
+          <Link to="/bills" className="feature-card">
+            <span className="feature-badge">OCR + ML</span>
+            <h3>Bill Insights</h3>
+            <p>
+              Upload old bills as PDFs, photos or a handwritten list. WattWise reads the units, finds your
+              trend and unusual months, forecasts the next few bills and tells you how to use less.
+            </p>
+            <span className="feature-link">Upload bills &rarr;</span>
+          </Link>
+          <Link to="/simulator" className="feature-card">
+            <span className="feature-badge">What-if</span>
+            <h3>Appliance What-If</h3>
+            <p>
+              Thinking of a second AC, or getting rid of the old geyser? See the change in monthly units and
+              your TNEB bill before you buy, including slab jumps.
+            </p>
+            <span className="feature-link">Try a scenario &rarr;</span>
+          </Link>
+          <div className="feature-card">
+            <VoltMascot size={64} wave />
+            <h3>Meet Volt, your assistant</h3>
+            <p>
+              Ask anything about your bills, tariffs or appliances. Volt uses the same models as the rest of
+              the app, so its numbers match. Tap the little power-orb in the corner.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="section">
